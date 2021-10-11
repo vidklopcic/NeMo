@@ -13,7 +13,7 @@ AUDIO_FORMAT='.mp3'
 USE_NEMO_NORMALIZATION='False'
 
 DATA_DIR="/home/ebakhturina/data/segmentation/test/data"
-MODEL_NAME_OR_PATH="QuartzNet15x5Base-En" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
+MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
 OUTPUT_DIR="/home/ebakhturina/data/segmentation/test/out_${MODEL_NAME_OR_PATH}_2"
 
 rm -rf ${OUTPUT_DIR}

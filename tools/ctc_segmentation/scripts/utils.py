@@ -81,10 +81,25 @@ def get_segments(
     if len(text_normalized) != len(text):
         raise ValueError(f'{transcript_file} and {transcript_file_normalized} do not match')
 
+    # 10/11
+    from prepare_bpe import prepare_text_default, get_config
+    import nemo.collections.asr as nemo_asr
+    config = get_config()
+    vocabulary = config.char_list
+    text_processed = []
+    for i in range(len(text)):
+        text_processed.append(" ".join(["▁" + x for x in text[i].split()]))
+    ground_truth_mat, utt_begin_indices = prepare_text_default(config, text_processed)
+    _print(ground_truth_mat, vocabulary)
+
+    # import pdb; pdb.set_trace()
+
+
     # works for sentences CitriNet
-    # from prepare_bpe import prepare_tokenized_text_nemo
-    # ground_truth_mat, utt_begin_indices = prepare_tokenized_text_nemo(text, vocabulary)
+    # from prepare_bpe import prepare_tokenized_text
+    # ground_truth_mat, utt_begin_indices = prepare_tokenized_text(text, vocabulary)
     # _print(ground_truth_mat, vocabulary)
+    # import pdb; pdb.set_trace()
 
     # print(text[:2])
     # import sys
@@ -99,19 +114,16 @@ def get_segments(
     # for uttr in text:
     #     text_repl.append(["▁" + t for t in uttr.split()])
 
-    # QN
-    config = cs.CtcSegmentationParameters()
-    config.char_list = vocabulary
-    config.min_window_size = window_size
-    config.index_duration = 0.02
-    # config.space = " "
-    config.blank = vocabulary.index(" ") #len(vocabulary) - 1 #config.space #vocabulary.index(" ")
-    # config.space = " "
-    ground_truth_mat, utt_begin_indices = cs.prepare_text(config, text)
-    _print(ground_truth_mat, vocabulary)
-    import pdb;
-    pdb.set_trace()
-    print()
+    # # QN
+    # config = cs.CtcSegmentationParameters()
+    # config.char_list = vocabulary
+    # config.min_window_size = window_size
+    # config.index_duration = 0.02
+    # # config.space = " "
+    # config.blank = vocabulary.index(" ") #len(vocabulary) - 1 #config.space #vocabulary.index(" ")
+    # # config.space = " "
+    # ground_truth_mat, utt_begin_indices = cs.prepare_text(config, text)
+    # _print(ground_truth_mat, vocabulary)
 
     # import pdb; pdb.set_trace()
     logging.debug(f"Syncing {transcript_file}")
@@ -123,11 +135,10 @@ def get_segments(
     timings, char_probs, char_list = cs.ctc_segmentation(config, log_probs, ground_truth_mat)
     segments = cs.determine_utterance_segments(config, utt_begin_indices, char_probs, timings, text)
 
-    print(segments)
-    # for word, segment in zip(text, segments):
-    #     print(f"{segment[0]:.2f} {segment[1]:.2f} {segment[2]:3.4f} {word}")
+    for word, segment in zip(text, segments):
+        print(f"{segment[0]:.2f} {segment[1]:.2f} {segment[2]:3.4f} {word}")
 
-    write_output(output_file, path_wav, segments, text, text_no_preprocessing, text_normalized)
+    write_output(output_file, path_wav, segments, text, text_no_preprocessing, text_normalized, 1/3)
 
 def _print(ground_truth_mat, vocabulary):
     chars = []
@@ -137,7 +148,7 @@ def _print(ground_truth_mat, vocabulary):
             if ch_id != -1:
                 chars[-1].append(vocabulary[int(ch_id)])
 
-    print([print(x) for x in chars[:20]])
+    [print(x) for x in chars[:100]]
 
 def write_output(
     out_path: str,
@@ -146,7 +157,7 @@ def write_output(
     text: str,
     text_no_preprocessing: str,
     text_normalized: str,
-    stride: int = 2,
+    stride: float = 1,
 ):
     """
     Write the segmentation output to a file
