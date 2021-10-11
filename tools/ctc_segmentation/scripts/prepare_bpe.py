@@ -29,6 +29,7 @@ def prepare_tokenized_text_nemo(text, asr_model="stt_en_citrinet_512_gamma_0_25"
     return ground_truth_mat, utt_begin_indices, vocabulary
 
 def prepare_tokenized_text_nemo_works(text, asr_model="stt_en_citrinet_512_gamma_0_25"):
+    """ WORKS DO NOT CHANGE"""
     asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(asr_model)
     vocabulary = list(asr_model.cfg.decoder.vocabulary) + ["ε"]
     tokenizer = asr_model.tokenizer
@@ -151,6 +152,7 @@ def prepare_text_default(config, text, char_list=None):
     if not ground_truth.endswith(config.space):
         ground_truth += config.space
     print(f"ground_truth: {ground_truth}")
+    import pdb; pdb.set_trace()
     utt_begin_indices.append(len(ground_truth) - 1)
     # Create matrix: time frame x number of letters the character symbol spans
     max_char_len = max([len(c) for c in config.char_list])
@@ -175,11 +177,11 @@ def get_config():
     vocabulary = list(asr_model.cfg.decoder.vocabulary) + ["ε"]
     tokenizer = asr_model.tokenizer
 
-    for i in range(len(vocabulary) - 1):
-        if not vocabulary[i].startswith("##"):
-            vocabulary[i] = "▁" + vocabulary[i]
-        else:
-            vocabulary[i] = vocabulary[i].replace("##", "")
+    # for i in range(len(vocabulary) - 1):
+    #     if not vocabulary[i].startswith("##"):
+    #         vocabulary[i] = "▁" + vocabulary[i]
+    #     else:
+    #         vocabulary[i] = vocabulary[i].replace("##", "")
 
     config = cs.CtcSegmentationParameters()
     config.char_list = vocabulary
