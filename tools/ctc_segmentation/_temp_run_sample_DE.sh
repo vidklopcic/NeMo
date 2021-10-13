@@ -2,22 +2,22 @@
 
 # default values for optional arguments
 MIN_SCORE=-100
-CUT_PREFIX=0
+CUT_PREFIX=0 #18
 SCRIPTS_DIR="scripts"
 OFFSET=0
-LANGUAGE='eng' # 'eng', 'ru', 'other'
+LANGUAGE='de' # 'eng', 'ru', 'other'
 MIN_SEGMENT_LEN=0
 MAX_SEGMENT_LEN=1
 ADDITIONAL_SPLIT_SYMBOLS=" "
-AUDIO_FORMAT='.wav'
+AUDIO_FORMAT='.mp3'
 USE_NEMO_NORMALIZATION='False'
 
-FOLDER="GTC"
-DATA_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/data"
-MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
-OUTPUT_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/out_${MODEL_NAME_OR_PATH}_2"
+FOLDER="sample"
+DATA_DIR="/home/ebakhturina/data/segmentation/german/data"
 
-#rm -rf ${OUTPUT_DIR}
+MODEL_NAME_OR_PATH="/home/ebakhturina/data/segmentation/models/de/best_stt_de_citrinet_1024.nemo"
+OUTPUT_DIR="/home/ebakhturina/data/segmentation/german/output_best"
+rm -rf ${OUTPUT_DIR}
 
 for ARG in "$@"
 do
@@ -130,14 +130,14 @@ python $SCRIPTS_DIR/process_manifests.py \
 --num_samples 0
 
 python /home/ebakhturina/NeMo/examples/asr/transcribe_speech.py \
-pretrained_name=$MODEL_NAME_OR_PATH \
+model_path=$MODEL_NAME_OR_PATH \
 dataset_manifest=${OUTPUT_DIR}/all_manifest.json \
-output_filename=${OUTPUT_DIR}/manifests/transcribed_${MODEL_NAME_OR_PATH}.json
+output_filename=${OUTPUT_DIR}/transcribed_all_manifest.json
 
-python $SCRIPTS_DIR/process_tail.py --manifest=${OUTPUT_DIR}/manifests/transcribed_${MODEL_NAME_OR_PATH}.json \
+python $SCRIPTS_DIR//process_tail.py --manifest=${OUTPUT_DIR}/transcribed_all_manifest.json \
 --sr=16000
 
 python /home/ebakhturina/NeMo/tools/speech_data_explorer/data_explorer.py \
 --port 8055 \
-${OUTPUT_DIR}/manifests/transcribed_${MODEL_NAME_OR_PATH}_tail.json
+${OUTPUT_DIR}/transcribed_all_manifest_tail.json
 

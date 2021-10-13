@@ -43,7 +43,11 @@ parser.add_argument(
 )
 parser.add_argument('--sample_rate', type=int, default=16000, help='Sampling rate used during ASR model training')
 parser.add_argument(
-    '--language', type=str, default='eng', choices=['eng', 'ru', 'add other languages supported by num2words.']
+    '--language',
+    type=str,
+    default='eng',
+    choices=['eng', 'ru', 'de', 'es', 'other'],
+    help='Add target language based on the num2words list of supported languages',
 )
 parser.add_argument(
     '--cut_prefix', type=int, default=0, help='Number of seconds to cut from the beginning of the audio files.',
@@ -348,8 +352,11 @@ def split_text(
 
     # remove all OOV symbols
     import string
+
     # use QN vocabs for available languages
-    symbols_to_remove = string.punctuation.replace("'", "") # ''.join(set(sentences).difference(set(vocabulary + ['\n'])))
+    symbols_to_remove = string.punctuation.replace(
+        "'", ""
+    )  # ''.join(set(sentences).difference(set(vocabulary + ['\n'])))
     sentences = sentences.translate(''.maketrans(symbols_to_remove, len(symbols_to_remove) * ' '))
     # remove extra space
     sentences = re.sub(r' +', ' ', sentences)

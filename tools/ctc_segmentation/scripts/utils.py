@@ -50,8 +50,8 @@ def get_segments(
     config.char_list = vocabulary
     config.min_window_size = window_size
     config.index_duration = 0.0799983368347339
-    config.blank = -1
-    config.space = "▁"
+    config.blank = len(vocabulary) - 1
+    # config.space = "▁"
 
     with open(transcript_file, "r") as f:
         text = f.readlines()
@@ -81,24 +81,39 @@ def get_segments(
     if len(text_normalized) != len(text):
         raise ValueError(f'{transcript_file} and {transcript_file_normalized} do not match')
 
-
-    # 10/11
-    from prepare_bpe import prepare_text_default, get_config
-    config = get_config()
-    vocabulary = config.char_list
-    text_processed = []
-    for i in range(len(text)):
-        text_processed.append(" ".join(["▁" + x for x in text[i].split()]))
-    ground_truth_mat, utt_begin_indices = prepare_text_default(config, text_processed)
-    _print(ground_truth_mat, vocabulary)
-
+    # # 10/11
+    # from prepare_bpe import prepare_text_default, get_config
+    # config, tokenizer = get_config()
+    # vocabulary = config.char_list
+    # text_processed = []
+    # for i in range(len(text)):
+    #     text_processed.append(" ".join(["▁" + x for x in text[i].split()]))
+    # ground_truth_mat, utt_begin_indices = prepare_text_default(config, text_processed)
+    # _print(ground_truth_mat, vocabulary)
+    # stride = 1/3.21
 
     """
     # works for sentences CitriNet
     from prepare_bpe import prepare_tokenized_text_nemo_works
-    ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works(text)
+    # asr_model = "/home/ebakhturina/data/segmentation/models/ru/CitriNet-512-8x-Stride-Gamma-0.25-RU-e100_wer25.nemo"
+    asr_model = "stt_en_citrinet_512_gamma_0_25"
+    asr_model = "/home/ebakhturina/data/segmentation/models/de/best_stt_de_citrinet_1024.nemo"
+    asr_model = "stt_en_citrinet_512_gamma_0_25"
+    stride = 1
+    ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works(text, asr_model)
     _print(ground_truth_mat, vocabulary)
     """
+
+    # works for sentences CitriNet
+    from prepare_bpe import prepare_tokenized_text_nemo_works_modified
+
+    # asr_model = "/home/ebakhturina/data/segmentation/models/ru/CitriNet-512-8x-Stride-Gamma-0.25-RU-e100_wer25.nemo"
+    asr_model = "stt_en_citrinet_512_gamma_0_25"
+    asr_model = "/home/ebakhturina/data/segmentation/models/de/best_stt_de_citrinet_1024.nemo"
+    asr_model = "stt_en_citrinet_512_gamma_0_25"
+    stride = 1
+    ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works_modified(text, asr_model)
+    _print(ground_truth_mat, vocabulary)
 
     # print(text[:2])
     # import sys
@@ -137,7 +152,8 @@ def get_segments(
     for word, segment in zip(text, segments):
         print(f"{segment[0]:.2f} {segment[1]:.2f} {segment[2]:3.4f} {word}")
 
-    write_output(output_file, path_wav, segments, text, text_no_preprocessing, text_normalized, 1)
+    write_output(output_file, path_wav, segments, text, text_no_preprocessing, text_normalized, stride)
+
 
 def _print(ground_truth_mat, vocabulary):
     chars = []
@@ -148,6 +164,7 @@ def _print(ground_truth_mat, vocabulary):
                 chars[-1].append(vocabulary[int(ch_id)])
 
     [print(x) for x in chars[:100]]
+
 
 def write_output(
     out_path: str,
