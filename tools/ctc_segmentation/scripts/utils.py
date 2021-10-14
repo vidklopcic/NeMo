@@ -81,17 +81,17 @@ def get_segments(
     if len(text_normalized) != len(text):
         raise ValueError(f'{transcript_file} and {transcript_file_normalized} do not match')
 
-    # # 10/11
-    # from prepare_bpe import prepare_text_default, get_config
-    # config, tokenizer = get_config()
-    # vocabulary = config.char_list
-    # text_processed = []
-    # for i in range(len(text)):
-    #     text_processed.append(" ".join(["▁" + x for x in text[i].split()]))
-    # ground_truth_mat, utt_begin_indices = prepare_text_default(config, text_processed)
-    # _print(ground_truth_mat, vocabulary)
-    # stride = 1/3.21
-
+    """
+    # 10/11
+    from prepare_bpe import prepare_text_default, get_config
+    config, tokenizer = get_config()
+    vocabulary = config.char_list
+    text_processed = []
+    for i in range(len(text)):
+        text_processed.append(" ".join(["▁" + x for x in text[i].split()]))
+    ground_truth_mat, utt_begin_indices = prepare_text_default(config, text_processed)
+    _print(ground_truth_mat, vocabulary)
+    stride = 1/3.21
     """
     # works for sentences CitriNet
     from prepare_bpe import prepare_tokenized_text_nemo_works
@@ -102,18 +102,9 @@ def get_segments(
     stride = 1
     ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works(text, asr_model)
     _print(ground_truth_mat, vocabulary)
-    """
 
-    # works for sentences CitriNet
-    from prepare_bpe import prepare_tokenized_text_nemo_works_modified
 
-    # asr_model = "/home/ebakhturina/data/segmentation/models/ru/CitriNet-512-8x-Stride-Gamma-0.25-RU-e100_wer25.nemo"
-    asr_model = "stt_en_citrinet_512_gamma_0_25"
-    asr_model = "/home/ebakhturina/data/segmentation/models/de/best_stt_de_citrinet_1024.nemo"
-    asr_model = "stt_en_citrinet_512_gamma_0_25"
-    stride = 1
-    ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works_modified(text, asr_model)
-    _print(ground_truth_mat, vocabulary)
+
 
     # print(text[:2])
     # import sys

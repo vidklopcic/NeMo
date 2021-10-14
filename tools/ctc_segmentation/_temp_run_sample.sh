@@ -2,7 +2,7 @@
 
 # default values for optional arguments
 MIN_SCORE=-100
-CUT_PREFIX=0
+CUT_PREFIX=3
 SCRIPTS_DIR="scripts"
 OFFSET=0
 LANGUAGE='eng' # 'eng', 'ru', 'other'
@@ -12,12 +12,16 @@ ADDITIONAL_SPLIT_SYMBOLS=" "
 AUDIO_FORMAT='.wav'
 USE_NEMO_NORMALIZATION='False'
 
-FOLDER="GTC"
-DATA_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/data"
-MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
-OUTPUT_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/out_${MODEL_NAME_OR_PATH}_2"
+#FOLDER="GTC"
+#DATA_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/data"
+#MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
+#OUTPUT_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/out_${MODEL_NAME_OR_PATH}_2"
 
-#rm -rf ${OUTPUT_DIR}
+DATA_DIR="/mnt/sdb/DATA/youtube_mayank/YT/data"
+MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
+OUTPUT_DIR="/mnt/sdb/DATA/youtube_mayank/YT/out_${MODEL_NAME_OR_PATH}_2"
+
+rm -rf ${OUTPUT_DIR}
 
 for ARG in "$@"
 do

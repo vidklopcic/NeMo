@@ -246,6 +246,10 @@ def load_data(data_filename, disable_caching=False, estimate_audio=False, vocab=
                 pickle.HIGHEST_PROTOCOL,
             )
 
+    with open(data_filename.replace(".json", "_metrics.json"), "w") as fo:
+        for item in data:
+            fo.write(json.dumps(item) + '\n')
+
     return data, wer, cer, wmr, mwa, num_hours, vocabulary_data, alphabet, metrics_available
 
 
