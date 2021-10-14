@@ -184,7 +184,13 @@ def prepare_text_default(config, text, char_list=None):
     print(f"ground_truth: {ground_truth}")
     utt_begin_indices.append(len(ground_truth) - 1)
     # Create matrix: time frame x number of letters the character symbol spans
-    max_char_len = max([len(c) for c in config.char_list])
+    # qn = False
+    # max_char_len = max([len(c) for c in config.char_list])
+
+    # for QN:
+    qn = True
+    max_char_len = 2
+
     ground_truth_mat = np.ones([len(ground_truth), max_char_len], np.int64) * -1
     for i in range(len(ground_truth)):
         for s in range(max_char_len):
@@ -202,12 +208,16 @@ def prepare_text_default(config, text, char_list=None):
             # if span in config.char_list:
             #     char_index = config.char_list.index(span)
             #     ground_truth_mat[i, s] = char_index
-            if not span.startswith(config.space) and (config.tokenized_meta_symbol + span) in config.char_list:
-                char_index = config.char_list.index(config.tokenized_meta_symbol + span)
-                ground_truth_mat[i, s] = char_index
-            elif span.startswith(config.space) and span[1:] in config.char_list:
-                # import pdb; pdb.set_trace()
-                char_index = config.char_list.index(span[1:])
+            if not qn:
+                if not span.startswith(config.space) and (config.tokenized_meta_symbol + span) in config.char_list:
+                    char_index = config.char_list.index(config.tokenized_meta_symbol + span)
+                    ground_truth_mat[i, s] = char_index
+                elif span.startswith(config.space) and span[1:] in config.char_list:
+                    # import pdb; pdb.set_trace()
+                    char_index = config.char_list.index(span[1:])
+                    ground_truth_mat[i, s] = char_index
+            elif qn and span in config.char_list:
+                char_index = config.char_list.index(span)
                 ground_truth_mat[i, s] = char_index
 
     return ground_truth_mat, utt_begin_indices
@@ -248,9 +258,18 @@ def get_config_match_cs():
     # config.tokenized_meta_symbol = "##"
     return config
 
+def get_config_qn():
+    asr_model = nemo_asr.models.EncDecCTCModel.from_pretrained("QuartzNet15x5Base-En")
+    vocabulary = list(asr_model.cfg.decoder.vocabulary) + ["ε"]
+    config = cs.CtcSegmentationParameters()
+    config.char_list = vocabulary
+    config.blank = len(vocabulary) - 1
+    config.space = " "
+    return config
 
 if __name__ == "__main__":
-
+    """
+    WORKS
     text = ["a carrier", "upon"]
     ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works_modified(
         text, "stt_en_citrinet_512_gamma_0_25"
@@ -260,6 +279,14 @@ if __name__ == "__main__":
     print('-' * 40)
     import pdb
     pdb.set_trace()
+    """
+
+    # QN
+    text = ["a carrier", "upon"]
+    # config.tokenized_meta_symbol = "##"
+    config = get_config_qn()
+    ground_truth_mat, utt_begin_indices = prepare_text_default(config, text)
+    _print(ground_truth_mat, config.char_list)
 
 
     """

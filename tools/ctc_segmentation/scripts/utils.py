@@ -81,12 +81,12 @@ def get_segments(
     if len(text_normalized) != len(text):
         raise ValueError(f'{transcript_file} and {transcript_file_normalized} do not match')
 
-    words = []
-    for t in text:
-        words.extend(t.split())
-    text = words
-    text_normalized = words
-    text_no_preprocessing = words
+    # words = []
+    # for t in text:
+    #     words.extend(t.split())
+    # text = words
+    # text_normalized = words
+    # text_no_preprocessing = words
 
     """
     # 10/11
@@ -101,6 +101,7 @@ def get_segments(
     _print(ground_truth_mat, vocabulary)
     stride = 1/3.2
     """
+    """
     # works for sentences CitriNet
     from prepare_bpe import prepare_tokenized_text_nemo_works_modified
     # asr_model = "/home/ebakhturina/data/segmentation/models/ru/CitriNet-512-8x-Stride-Gamma-0.25-RU-e100_wer25.nemo"
@@ -110,7 +111,7 @@ def get_segments(
     stride = 1
     ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works_modified(text, asr_model)
     _print(ground_truth_mat, vocabulary)
-
+    """
 
 
 
@@ -127,16 +128,14 @@ def get_segments(
     # for uttr in text:
     #     text_repl.append(["▁" + t for t in uttr.split()])
 
-    # # QN
-    # config = cs.CtcSegmentationParameters()
-    # config.char_list = vocabulary
-    # config.min_window_size = window_size
-    # config.index_duration = 0.02
-    # # config.space = " "
-    # config.blank = vocabulary.index(" ") #len(vocabulary) - 1 #config.space #vocabulary.index(" ")
-    # # config.space = " "
-    # ground_truth_mat, utt_begin_indices = cs.prepare_text(config, text)
-    # _print(ground_truth_mat, vocabulary)
+    # QN
+    from prepare_bpe import prepare_text_default, get_config_qn
+    config = get_config_qn()
+    config.min_window_size = window_size
+    config.index_duration = 0.02
+    ground_truth_mat, utt_begin_indices = prepare_text_default(config, text)
+    _print(ground_truth_mat, config.char_list)
+    stride = 1
 
     # import pdb; pdb.set_trace()
     logging.debug(f"Syncing {transcript_file}")

@@ -250,7 +250,8 @@ class DuplexTextNormalizationModel(nn.Module):
         # span_ends included, returns index wrt to words in input without auxiliary words
         tag_preds, nb_spans, span_starts, span_ends = self.tagger._infer(sents, inst_directions)
         output_spans = self.decoder._infer(sents, nb_spans, span_starts, span_ends, inst_directions)
-
+        print(sents)
+        print(tag_preds)
         # Prepare final outputs
         final_outputs = []
         for ix, (sent, tags) in enumerate(zip(sents, tag_preds)):

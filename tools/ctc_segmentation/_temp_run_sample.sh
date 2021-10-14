@@ -14,7 +14,7 @@ USE_NEMO_NORMALIZATION='False'
 
 FOLDER="test"
 DATA_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/data"
-MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
+MODEL_NAME_OR_PATH="QuartzNet15x5Base-En" #"stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
 OUTPUT_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/out_${MODEL_NAME_OR_PATH}_2"
 
 #DATA_DIR="/mnt/sdb/DATA/youtube_mayank/YT/data"
