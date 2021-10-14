@@ -155,6 +155,7 @@ def get_words(fpath, tokenizer):
 
 def prepare_text_default(config, text, char_list=None):
     # temporary compatibility fix for previous espnet versions
+    config.replace_spaces_with_blanks = True
     if type(config.blank) == str:
         config.blank = 0
     if char_list is not None:
@@ -191,16 +192,15 @@ def prepare_text_default(config, text, char_list=None):
                 continue
             span = ground_truth[i - s : i + 1]
             # print(f'{i} -- {span} --> {span.replace(config.space, blank)}')
-            # if 'market' in span:
-            #     import pdb; pdb.set_trace()
+            # if 'ri' in span:
             if span == config.space:
                 span = span.replace(config.space, blank)
                 char_index = config.char_list.index(span)
                 ground_truth_mat[i, s] = char_index
-            if span in config.char_list:
-                char_index = config.char_list.index(span)
-                ground_truth_mat[i, s] = char_index
-            elif not span.startswith(config.space) and (config.tokenized_meta_symbol + span) in config.char_list:
+            # if span in config.char_list:
+            #     char_index = config.char_list.index(span)
+            #     ground_truth_mat[i, s] = char_index
+            if not span.startswith(config.space) and (config.tokenized_meta_symbol + span) in config.char_list:
                 char_index = config.char_list.index(config.tokenized_meta_symbol + span)
                 ground_truth_mat[i, s] = char_index
             elif span.startswith(config.space) and span[1:] in config.char_list:
@@ -248,6 +248,7 @@ def get_config_match_cs():
 
 
 if __name__ == "__main__":
+    """
     text = ["a carrier", "upon"]
     ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works_modified(
         text, "stt_en_citrinet_512_gamma_0_25"
@@ -256,28 +257,22 @@ if __name__ == "__main__":
     print('\n')
     print('-' * 40)
     import pdb
+    pdb.set_trace()
+    """
+
+    text = ["a carrier", "upon market"]
+    for i in range(len(text)):
+        text[i] = " ".join(["▁" + x for x in text[i].split()])
+    print(text)
+    config, tokenizer = get_config()
+    ground_truth_mat, utt_begin_indices = prepare_text_default(config, text)
+    _print(ground_truth_mat, config.char_list)
+    print('\n')
+    print('-' * 40)
+    import pdb;
 
     pdb.set_trace()
-
-    # # text = ['▁a ▁carrier ▁on ▁his ▁way ▁to ▁a ▁market ▁town ▁really']
-    # text = ["a carrier", "upon market"]
-    # for i in range(len(text)):
-    #     text[i] = " ".join(["▁" + x for x in text[i].split()])
-    # print(text)
-    # # tokenized: ['▁a', '▁car', 'ri', 'er', '▁on', '▁his', '▁way', '▁to', '▁a', '▁market', '▁town', '▁really']
-    # # text = ['▁a ▁carrier ▁really']
-    # config, tokenizer = get_config()
-    # ground_truth_mat, utt_begin_indices = prepare_text_default(config, text)
-    #
-    # # ground_truth_mat, utt_begin_indices = prepare_tokenized_text(['▁a ▁car ri er ▁really'], config.char_list)
-    #
-    # _print(ground_truth_mat, config.char_list)
-    # print('\n')
-    # print('-' * 40)
-    # import pdb;
-    #
-    # pdb.set_trace()
-    # print()
+    print()
 
 
 """

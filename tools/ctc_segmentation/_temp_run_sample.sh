@@ -9,17 +9,17 @@ LANGUAGE='eng' # 'eng', 'ru', 'other'
 MIN_SEGMENT_LEN=0
 MAX_SEGMENT_LEN=1
 ADDITIONAL_SPLIT_SYMBOLS=" "
-AUDIO_FORMAT='.wav'
+AUDIO_FORMAT='.mp3'
 USE_NEMO_NORMALIZATION='False'
 
-#FOLDER="GTC"
-#DATA_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/data"
-#MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
-#OUTPUT_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/out_${MODEL_NAME_OR_PATH}_2"
-
-DATA_DIR="/mnt/sdb/DATA/youtube_mayank/YT/data"
+FOLDER="test"
+DATA_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/data"
 MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
-OUTPUT_DIR="/mnt/sdb/DATA/youtube_mayank/YT/out_${MODEL_NAME_OR_PATH}_2"
+OUTPUT_DIR="/home/ebakhturina/data/segmentation/${FOLDER}/out_${MODEL_NAME_OR_PATH}_2"
+
+#DATA_DIR="/mnt/sdb/DATA/youtube_mayank/YT/data"
+#MODEL_NAME_OR_PATH="stt_en_citrinet_512_gamma_0_25" #stt_en_citrinet_256 # "QuartzNet15x5Base-En" #
+#OUTPUT_DIR="/mnt/sdb/DATA/youtube_mayank/YT/out_${MODEL_NAME_OR_PATH}_2"
 
 rm -rf ${OUTPUT_DIR}
 

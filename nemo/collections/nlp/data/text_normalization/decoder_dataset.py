@@ -413,8 +413,14 @@ class DecoderDataInstance:
             input_words = [constants.ITN_PREFIX] + s_input
             output_words = c_w_words
         if inst_dir == constants.INST_FORWARD:
+            if semiotic_class == 'DATE':
+                PREFIX = '2'
+            elif semiotic_class == 'FRACTION':
+                PREFIX = '3'
+            else:
+                PREFIX = constants.TN_PREFIX
             input_center_words = c_w_words
-            input_words = [constants.TN_PREFIX] + w_input
+            input_words = [PREFIX] + w_input
             output_words = c_s_words
         # Finalize
         self.input_str = ' '.join(input_words)

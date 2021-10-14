@@ -81,8 +81,16 @@ def get_segments(
     if len(text_normalized) != len(text):
         raise ValueError(f'{transcript_file} and {transcript_file_normalized} do not match')
 
-    """
+
     # 10/11
+    # make words
+    words = []
+    for t in text:
+        words.extend(t.split())
+    text = words
+    text_normalized = words
+    text_no_preprocessing = words
+    print()
     from prepare_bpe import prepare_text_default, get_config
     config, tokenizer = get_config()
     vocabulary = config.char_list
@@ -91,7 +99,8 @@ def get_segments(
         text_processed.append(" ".join(["▁" + x for x in text[i].split()]))
     ground_truth_mat, utt_begin_indices = prepare_text_default(config, text_processed)
     _print(ground_truth_mat, vocabulary)
-    stride = 1/3.21
+    stride = 1/3.2
+
     """
     # works for sentences CitriNet
     from prepare_bpe import prepare_tokenized_text_nemo_works
@@ -102,7 +111,7 @@ def get_segments(
     stride = 1
     ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works(text, asr_model)
     _print(ground_truth_mat, vocabulary)
-
+    """
 
 
 
