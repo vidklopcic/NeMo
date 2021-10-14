@@ -171,10 +171,10 @@ def prepare_text_default(config, text, char_list=None):
         utt_begin_indices.append(len(ground_truth))
         # Add chars of utterance
         for char in utt:
-            if char.isspace() and config.replace_spaces_with_blanks:
-                if not ground_truth.endswith(config.space):
-                    ground_truth += config.space
-            elif char in config.char_list and char not in config.excluded_characters:
+            # if char.isspace() and config.replace_spaces_with_blanks:
+            #     if not ground_truth.endswith(config.space):
+            #         ground_truth += config.space
+            if char in config.char_list and char not in config.excluded_characters:
                 ground_truth += char
             elif config.tokenized_meta_symbol + char in config.char_list:
                 ground_truth += char
@@ -193,10 +193,12 @@ def prepare_text_default(config, text, char_list=None):
             span = ground_truth[i - s : i + 1]
             # print(f'{i} -- {span} --> {span.replace(config.space, blank)}')
             # if 'ri' in span:
+            # print(span)
             if span == config.space:
                 span = span.replace(config.space, blank)
                 char_index = config.char_list.index(span)
                 ground_truth_mat[i, s] = char_index
+                ground_truth_mat[i, s+1] = config.char_list.index(config.space)
             # if span in config.char_list:
             #     char_index = config.char_list.index(span)
             #     ground_truth_mat[i, s] = char_index
@@ -248,7 +250,7 @@ def get_config_match_cs():
 
 
 if __name__ == "__main__":
-    """
+
     text = ["a carrier", "upon"]
     ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works_modified(
         text, "stt_en_citrinet_512_gamma_0_25"
@@ -258,8 +260,9 @@ if __name__ == "__main__":
     print('-' * 40)
     import pdb
     pdb.set_trace()
-    """
 
+
+    """
     text = ["a carrier", "upon market"]
     for i in range(len(text)):
         text[i] = " ".join(["▁" + x for x in text[i].split()])
@@ -272,6 +275,8 @@ if __name__ == "__main__":
     import pdb;
 
     pdb.set_trace()
+    print()
+    """
     print()
 
 

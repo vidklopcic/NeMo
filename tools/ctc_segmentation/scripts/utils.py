@@ -81,16 +81,16 @@ def get_segments(
     if len(text_normalized) != len(text):
         raise ValueError(f'{transcript_file} and {transcript_file_normalized} do not match')
 
-
-    # 10/11
-    # make words
     words = []
     for t in text:
         words.extend(t.split())
     text = words
     text_normalized = words
     text_no_preprocessing = words
-    print()
+
+    """
+    # 10/11
+    # make words
     from prepare_bpe import prepare_text_default, get_config
     config, tokenizer = get_config()
     vocabulary = config.char_list
@@ -100,18 +100,17 @@ def get_segments(
     ground_truth_mat, utt_begin_indices = prepare_text_default(config, text_processed)
     _print(ground_truth_mat, vocabulary)
     stride = 1/3.2
-
     """
     # works for sentences CitriNet
-    from prepare_bpe import prepare_tokenized_text_nemo_works
+    from prepare_bpe import prepare_tokenized_text_nemo_works_modified
     # asr_model = "/home/ebakhturina/data/segmentation/models/ru/CitriNet-512-8x-Stride-Gamma-0.25-RU-e100_wer25.nemo"
     asr_model = "stt_en_citrinet_512_gamma_0_25"
     asr_model = "/home/ebakhturina/data/segmentation/models/de/best_stt_de_citrinet_1024.nemo"
     asr_model = "stt_en_citrinet_512_gamma_0_25"
     stride = 1
-    ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works(text, asr_model)
+    ground_truth_mat, utt_begin_indices, vocabulary = prepare_tokenized_text_nemo_works_modified(text, asr_model)
     _print(ground_truth_mat, vocabulary)
-    """
+
 
 
 
@@ -149,8 +148,9 @@ def get_segments(
     timings, char_probs, char_list = cs.ctc_segmentation(config, log_probs, ground_truth_mat)
     segments = cs.determine_utterance_segments(config, utt_begin_indices, char_probs, timings, text)
 
-    for word, segment in zip(text, segments):
-        print(f"{segment[0]:.2f} {segment[1]:.2f} {segment[2]:3.4f} {word}")
+    for i, (word, segment) in enumerate(zip(text, segments)):
+        if i < 10:
+            print(f"{segment[0]:.2f} {segment[1]:.2f} {segment[2]:3.4f} {word}")
 
     write_output(output_file, path_wav, segments, text, text_no_preprocessing, text_normalized, stride)
 
