@@ -986,8 +986,6 @@ class _TarredAudioToTextDataset(IterableDataset):
             index_by_file_id=True,  # Must set this so the manifest lines can be indexed by file ID
         )
 
-        print('>>> paths:', audio_tar_filepaths)
-
         self.featurizer = WaveformFeaturizer(sample_rate=sample_rate, int_values=int_values, augmentor=augmentor)
         self.trim = trim
         self.eos_id = eos_id
