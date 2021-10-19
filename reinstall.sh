@@ -21,7 +21,7 @@ ${PIP} install -U setuptools
 
 echo 'Installing nemo and nemo_text_processing'
 if [[ "$INSTALL_OPTION" == "dev" ]]; then
-    ${PIP} install --editable ".[all]"
+    ${PIP} install --upgrade --editable ".[all]"
 else
     rm -rf dist/
     python setup.py bdist_wheel
