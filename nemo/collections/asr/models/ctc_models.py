@@ -164,14 +164,14 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
 
         with open_dict(self._cfg):
             if "feat_in" not in self._cfg.decoder or (
-                not self._cfg.decoder.feat_in and hasattr(self.encoder, '_feat_out')
+                    not self._cfg.decoder.feat_in and hasattr(self.encoder, '_feat_out')
             ):
                 self._cfg.decoder.feat_in = self.encoder._feat_out
             if "feat_in" not in self._cfg.decoder or not self._cfg.decoder.feat_in:
                 raise ValueError("param feat_in of the decoder's config is not set!")
 
-        print('--------')
-        print(self._cfg.decoder)
+        if 'feat_in' in self._cfg.decoder:
+            self._cfg.decoder.pop('feat_in')
         self.decoder = EncDecCTCModel.from_config_dict(self._cfg.decoder)
 
         self.loss = CTCLoss(
@@ -197,11 +197,11 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
 
     @torch.no_grad()
     def transcribe(
-        self,
-        paths2audio_files: List[str],
-        batch_size: int = 4,
-        logprobs: bool = False,
-        return_hypotheses: bool = False,
+            self,
+            paths2audio_files: List[str],
+            batch_size: int = 4,
+            logprobs: bool = False,
+            return_hypotheses: bool = False,
     ) -> List[str]:
         """
         Uses greedy decoding to transcribe audio files. Use this method for debugging and prototyping.
@@ -375,7 +375,7 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
         # Instantiate tarred dataset loader or normal dataset loader
         if config.get('is_tarred', False):
             if ('tarred_audio_filepaths' in config and config['tarred_audio_filepaths'] is None) or (
-                'manifest_filepath' in config and config['manifest_filepath'] is None
+                    'manifest_filepath' in config and config['manifest_filepath'] is None
             ):
                 logging.warning(
                     "Could not load dataset as `manifest_filepath` was None or "
@@ -514,7 +514,7 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
 
     @typecheck()
     def forward(
-        self, input_signal=None, input_signal_length=None, processed_signal=None, processed_signal_length=None
+            self, input_signal=None, input_signal_length=None, processed_signal=None, processed_signal_length=None
     ):
         """
         Forward pass of the model.
