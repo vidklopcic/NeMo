@@ -146,6 +146,7 @@ class RNNTDecoder(rnnt_abstract.AbstractRNNTDecoder, Exportable):
         normalization_mode: Optional[str] = None,
         random_state_sampling: bool = False,
         blank_as_pad: bool = True,
+        **kwargs,
     ):
         # Required arguments
         self.pred_hidden = prednet['pred_hidden']
