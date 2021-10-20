@@ -40,7 +40,6 @@ from torch import _VF
 TORCH_VERSION = None
 TORCH_VERSION_MIN = version.Version('1.7')
 
-
 def stft_patch(
         input: torch.Tensor,
         n_fft: int,
@@ -154,7 +153,11 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
          center: bool = True, pad_mode: str = 'reflect', normalized: bool = False,
          onesided: Optional[bool] = None,
          return_complex: Optional[bool] = None) -> Tensor:
-    print('HERE: stft')
+    print('---------')
+    print('size:', input.size())
+    print('n_fft:', n_fft)
+    print('hop_length:', hop_length)
+    print('win_length:', win_length)
     if has_torch_function_unary(input):
         return handle_torch_function(
             stft, (input,), input, n_fft, hop_length=hop_length, win_length=win_length,
