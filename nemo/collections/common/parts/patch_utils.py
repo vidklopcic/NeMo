@@ -156,10 +156,10 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
     # -----
     print('---------')
     print('size:', input.size())
+    print('stride:', input.stride())
     print('n_fft:', n_fft)
     print('hop_length:', hop_length)
     print('win_length:', win_length)
-    print('stride:', win_length)
     # ---->
     # size: torch.Size([16, 206720])
     # n_fft: 512
