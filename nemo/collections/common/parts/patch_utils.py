@@ -153,11 +153,21 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
          center: bool = True, pad_mode: str = 'reflect', normalized: bool = False,
          onesided: Optional[bool] = None,
          return_complex: Optional[bool] = None) -> Tensor:
+    # -----
     print('---------')
     print('size:', input.size())
     print('n_fft:', n_fft)
     print('hop_length:', hop_length)
     print('win_length:', win_length)
+    print('stride:', win_length)
+    # ---->
+    # size: torch.Size([16, 206720])
+    # n_fft: 512
+    # hop_length: 160
+    # win_length: 400
+    # n_fft: 512
+    # hop_length: 160
+    # win_length: 400
     if has_torch_function_unary(input):
         return handle_torch_function(
             stft, (input,), input, n_fft, hop_length=hop_length, win_length=win_length,
