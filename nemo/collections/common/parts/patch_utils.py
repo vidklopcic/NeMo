@@ -183,7 +183,7 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
         input = F.pad(input.view(extended_shape), [pad, pad], pad_mode)
         input = input.view(input.shape[-signal_dim:])
     input = input.unfold(-1, win_length or n_fft, hop_length).flatten(-2)
-    return _VF.stft(input, n_fft, hop_length, win_length, window,  # type: ignore[attr-defined]
+    return _VF.stft(input, n_fft, win_length or n_fft, win_length, window,  # type: ignore[attr-defined]
                     normalized, onesided, return_complex)
 
 
@@ -192,7 +192,6 @@ def istft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
           center: bool = True, normalized: bool = False,
           onesided: Optional[bool] = None, length: Optional[int] = None,
           return_complex: bool = False) -> Tensor:
-    print('HERE: istft')
     if has_torch_function_unary(input):
         return handle_torch_function(
             istft, (input,), input, n_fft, hop_length=hop_length, win_length=win_length,
