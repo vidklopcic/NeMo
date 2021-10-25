@@ -40,6 +40,7 @@ from torch import _VF
 TORCH_VERSION = None
 TORCH_VERSION_MIN = version.Version('1.7')
 
+
 def stft_patch(
         input: torch.Tensor,
         n_fft: int,
@@ -154,12 +155,12 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
          onesided: Optional[bool] = None,
          return_complex: Optional[bool] = None) -> Tensor:
     # -----
-    print('---------')
-    print('size:', input.size())
-    print('stride:', input.stride())
-    print('n_fft:', n_fft)
-    print('hop_length:', hop_length)
-    print('win_length:', win_length)
+    # print('---------')
+    # print('size:', input.size())
+    # print('stride:', input.stride())
+    # print('n_fft:', n_fft)
+    # print('hop_length:', hop_length)
+    # print('win_length:', win_length)
     # ---->
     # size: torch.Size([16, 206720])
     # n_fft: 512
@@ -170,7 +171,7 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
     # win_length: 400
     if has_torch_function_unary(input):
         return handle_torch_function(
-            stft, (input,), input, n_fft, hop_length=hop_length, win_length=win_length,
+            stft, (input,), input, n_fft, hop_length=win_length or n_fft, win_length=win_length,
             window=window, center=center, pad_mode=pad_mode, normalized=normalized,
             onesided=onesided, return_complex=return_complex)
     # TODO: after having proper ways to map Python strings to ATen Enum, move
@@ -181,6 +182,7 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
         pad = int(n_fft // 2)
         input = F.pad(input.view(extended_shape), [pad, pad], pad_mode)
         input = input.view(input.shape[-signal_dim:])
+    input = input.unfold(-1, win_length or n_fft, hop_length).flatten(-2)
     return _VF.stft(input, n_fft, hop_length, win_length, window,  # type: ignore[attr-defined]
                     normalized, onesided, return_complex)
 
@@ -197,5 +199,6 @@ def istft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
             window=window, center=center, normalized=normalized, onesided=onesided,
             length=length, return_complex=return_complex)
 
-    return _VF.istft(input, n_fft, hop_length, win_length, window, center,  # type: ignore[attr-defined]
+    input = input.unfold(-1, win_length or n_fft, hop_length).flatten(-2)
+    return _VF.istft(input, n_fft, win_length or n_fft, win_length, window, center,  # type: ignore[attr-defined]
                      normalized, onesided, length, return_complex)
