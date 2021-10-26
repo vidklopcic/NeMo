@@ -583,7 +583,7 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
             log_probs=log_probs, targets=transcript, input_lengths=encoded_len, target_lengths=transcript_len
         )
         print('---- training_step 3 ----')
-        print(transcript, predictions)
+        print(predictions)
 
         tensorboard_logs = {'train_loss': loss_value, 'learning_rate': self._optimizer.param_groups[0]['lr']}
 
@@ -602,7 +602,8 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
             wer, _, _ = self._wer.compute()
             self._wer.reset()
             tensorboard_logs.update({'training_batch_wer': wer})
-
+        print('---- training_step 4 ----')
+        print({'loss': loss_value, 'log': tensorboard_logs})
         return {'loss': loss_value, 'log': tensorboard_logs}
 
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
