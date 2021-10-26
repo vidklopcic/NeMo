@@ -534,7 +534,6 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
             2) The lengths of the acoustic sequence after propagation through the encoder, of shape [B].
             3) The greedy token predictions of the model of shape [B, T] (via argmax)
         """
-        print('---- forward 1 ----')
         has_input_signal = input_signal is not None and input_signal_length is not None
         has_processed_signal = processed_signal is not None and processed_signal_length is not None
         if (has_input_signal ^ has_processed_signal) == False:
@@ -544,48 +543,32 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
             )
 
         if not has_processed_signal:
-            print('---- forward 2.a.s ----')
             processed_signal, processed_signal_length = self.preprocessor(
                 input_signal=input_signal, length=input_signal_length,
             )
-            print('---- forward 2.a.e ----')
-
-        print('---- forward 2.b ----')
 
         if self.spec_augmentation is not None and self.training:
-            print('---- forward 3.a.s ----')
             processed_signal = self.spec_augmentation(input_spec=processed_signal, length=processed_signal_length)
-            print('---- forward 3.a.e ----')
-        print('---- forward 3.b ----')
 
         encoded, encoded_len = self.encoder(audio_signal=processed_signal, length=processed_signal_length)
-        print('---- forward 4 ----')
         log_probs = self.decoder(encoder_output=encoded)
-        print('---- forward 5 ----')
         greedy_predictions = log_probs.argmax(dim=-1, keepdim=False)
-        print('---- forward 6 ----')
+
         return log_probs, encoded_len, greedy_predictions
 
     # PTL-specific methods
     def training_step(self, batch, batch_nb):
-        print('---- training_step 1 ----')
         signal, signal_len, transcript, transcript_len = batch
-        print('signal_len:', signal_len)
-        print('transcript:', transcript)
-        print('transcript_len:', transcript_len)
-        print('-------------------------')
         if isinstance(batch, DALIOutputs) and batch.has_processed_signal:
             log_probs, encoded_len, predictions = self.forward(
                 processed_signal=signal, processed_signal_length=signal_len
             )
         else:
             log_probs, encoded_len, predictions = self.forward(input_signal=signal, input_signal_length=signal_len)
-        print('---- training_step 2 ----')
 
         loss_value = self.loss(
             log_probs=log_probs, targets=transcript, input_lengths=encoded_len, target_lengths=transcript_len
         )
-        print('---- training_step 3 ----')
 
         tensorboard_logs = {'train_loss': loss_value, 'learning_rate': self._optimizer.param_groups[0]['lr']}
 
@@ -595,21 +578,16 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
             log_every_n_steps = 1
 
         if (batch_nb + 1) % log_every_n_steps == 0:
-            print('---- training_step 4.a.1 ----')
             self._wer.update(
                 predictions=predictions,
                 targets=transcript,
                 target_lengths=transcript_len,
                 predictions_lengths=encoded_len,
             )
-            print('---- training_step 4.a.2 ----')
             wer, _, _ = self._wer.compute()
-            print('---- training_step 4.a.3 ----')
             self._wer.reset()
-            print('---- training_step 4.a.4 ----')
             tensorboard_logs.update({'training_batch_wer': wer})
-        print('---- training_step 4.b ----')
-        print({'loss': loss_value, 'log': tensorboard_logs})
+
         return {'loss': loss_value, 'log': tensorboard_logs}
 
     def validation_step(self, batch, batch_idx, dataloader_idx=0):

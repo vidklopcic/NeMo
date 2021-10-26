@@ -374,28 +374,24 @@ class FilterbankFeatures(nn.Module):
         return self.fb
 
     def forward(self, x, seq_len):
-        print('---- featurizer -> forward 1 ----')
         seq_len = self.get_seq_len(seq_len.float())
 
         if self.stft_pad_amount is not None:
             x = torch.nn.functional.pad(
                 x.unsqueeze(1), (self.stft_pad_amount, self.stft_pad_amount), "reflect"
             ).squeeze(1)
-        print('---- featurizer -> forward 2 ----')
+
         # dither (only in training mode for eval determinism)
         if self.training and self.dither > 0:
             x += self.dither * torch.randn_like(x)
-        print('---- featurizer -> forward 3 ----')
 
         # do preemphasis
         if self.preemph is not None:
             x = torch.cat((x[:, 0].unsqueeze(1), x[:, 1:] - self.preemph * x[:, :-1]), dim=1)
-        print('---- featurizer -> forward 4 ----')
 
         # disable autocast to get full range of stft values
-        # with torch.cuda.amp.autocast(enabled=False):
-        x = self.stft(x)
-        print('---- featurizer -> forward 5 ----')
+        with torch.cuda.amp.autocast(enabled=False):
+            x = self.stft(x)
 
         # torch returns real, imag; so convert to magnitude
         if not self.stft_conv:

@@ -40,7 +40,6 @@ from torch import _VF
 TORCH_VERSION = None
 TORCH_VERSION_MIN = version.Version('1.7')
 
-
 def stft_patch(
         input: torch.Tensor,
         n_fft: int,
@@ -182,8 +181,8 @@ def stft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
         pad = int(n_fft // 2)
         input = F.pad(input.view(extended_shape), [pad, pad], pad_mode)
         input = input.view(input.shape[-signal_dim:])
-    input = input.unfold(-1, n_fft, hop_length).flatten(-2)
-    hop_length = n_fft
+    # input = input.unfold(-1, n_fft, hop_length).flatten(-2)
+    # hop_length = n_fft
     return _VF.stft(input, n_fft, hop_length, win_length, window,  # type: ignore[attr-defined]
                     normalized, onesided, return_complex)
 
@@ -199,7 +198,7 @@ def istft(input: Tensor, n_fft: int, hop_length: Optional[int] = None,
             window=window, center=center, normalized=normalized, onesided=onesided,
             length=length, return_complex=return_complex)
 
-    input = input.unfold(-1, n_fft, hop_length).flatten(-2)
-    hop_length = n_fft
+    # input = input.unfold(-1, n_fft, hop_length).flatten(-2)
+    # hop_length = n_fft
     return _VF.istft(input, n_fft, hop_length, win_length, window, center,  # type: ignore[attr-defined]
                      normalized, onesided, length, return_complex)
