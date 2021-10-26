@@ -130,7 +130,7 @@ class TestASRModulesBasicTests:
         assert res.shape == res0[0].shape
 
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     def test_SpectrogramAugmentationr_numba_kernel(self, caplog):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
 

@@ -388,7 +388,7 @@ class PunctuationCapitalizationModel(NLPModel, Exportable):
 
         # Model's mode and device
         mode = self.training
-        device = 'cuda' if torch.cuda.is_available() else 'tpu'
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
         try:
             # Switch model to evaluation mode
             self.eval()

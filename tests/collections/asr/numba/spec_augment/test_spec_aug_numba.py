@@ -144,7 +144,7 @@ def time_mask_check(x, x_len, t_start, t_len, mask_value, bidx):
 
 class TestSpecAugmentNumba:
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.parametrize('dtype', ['float16', 'float32'])
     def test_spec_aug_kernel(self, dtype):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
@@ -164,7 +164,7 @@ class TestSpecAugmentNumba:
                 freq_mask_check(x, x_len, f_start, f_len, mask_value=cfg.mask_value, bidx=bidx)
 
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.parametrize('dtype', ['float16', 'float32'])
     def test_spec_aug_kernel_large_batch(self, dtype):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
@@ -196,7 +196,7 @@ class TestSpecAugmentNumba:
         spec_aug_numba.MAX_THREAD_BUFFER = original_buffer
 
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     def test_spec_aug_kernel_mask_value(self):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
 
@@ -221,7 +221,7 @@ class TestSpecAugmentNumba:
                 time_mask_check(x, x_len, t_start, t_len, mask_value=cfg.mask_value, bidx=bidx)
 
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     def test_spec_aug_kernel_grad(self):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
 
@@ -241,7 +241,7 @@ class TestSpecAugmentNumba:
         assert y.grad is not None
 
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     def test_spec_aug_kernel_no_freq_mask(self):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
 
@@ -260,7 +260,7 @@ class TestSpecAugmentNumba:
                 time_mask_check(x, x_len, t_start, t_len, mask_value=cfg.mask_value, bidx=bidx)
 
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     def test_spec_aug_kernel_no_time_mask(self):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
 
@@ -279,7 +279,7 @@ class TestSpecAugmentNumba:
                 freq_mask_check(x, x_len, f_start, f_len, mask_value=cfg.mask_value, bidx=bidx)
 
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     def test_spec_aug_kernel_no_freq_time_mask(self):
         numba_utils.skip_numba_cuda_test_if_unsupported(__NUMBA_MINIMUM_VERSION__)
 

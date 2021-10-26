@@ -92,8 +92,8 @@ class TestWordErrorRate:
     @pytest.mark.unit
     def test_wer_function(self):
         assert word_error_rate(hypotheses=['cat'], references=['cot']) == 1.0
-        assert word_error_rate(hypotheses=['tpu'], references=['G P U']) == 1.0
-        assert word_error_rate(hypotheses=['G P U'], references=['tpu']) == 3.0
+        assert word_error_rate(hypotheses=['GPU'], references=['G P U']) == 1.0
+        assert word_error_rate(hypotheses=['G P U'], references=['GPU']) == 3.0
         assert word_error_rate(hypotheses=['ducati motorcycle'], references=['motorcycle']) == 1.0
         assert word_error_rate(hypotheses=['ducati motorcycle'], references=['ducuti motorcycle']) == 0.5
         assert word_error_rate(hypotheses=['a B c'], references=['a b c']) == 1.0 / 3.0
@@ -103,8 +103,8 @@ class TestWordErrorRate:
         wer = WER(vocabulary=self.vocabulary, batch_dim_index=0, use_cer=False, ctc_decode=True)
 
         assert self.get_wer(wer, 'cat', 'cot') == 1.0
-        assert self.get_wer(wer, 'tpu', 'g p u') == 1.0
-        assert self.get_wer(wer, 'g p u', 'tpu') == 3.0
+        assert self.get_wer(wer, 'gpu', 'g p u') == 1.0
+        assert self.get_wer(wer, 'g p u', 'gpu') == 3.0
         assert self.get_wer(wer, 'ducati motorcycle', 'motorcycle') == 1.0
         assert self.get_wer(wer, 'ducati motorcycle', 'ducuti motorcycle') == 0.5
         assert abs(self.get_wer(wer, 'a f c', 'a b c') - 1.0 / 3.0) < 1e-6

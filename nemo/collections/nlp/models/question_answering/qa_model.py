@@ -206,7 +206,7 @@ class QAModel(NLPModel):
         all_predictions = []
         all_nbest = []
         mode = self.training
-        device = 'cuda' if torch.cuda.is_available() else 'tpu'
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
         try:
             # Switch model to evaluation mode
             self.eval()

@@ -73,7 +73,7 @@ def forward_wrapper(self, spec, z=None):
 
 
 class TestWaveGlow:
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_export_to_onnx(self):
         model = WaveGlowModel(wcfg)

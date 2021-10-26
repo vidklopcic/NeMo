@@ -55,7 +55,7 @@ def data_exists(data_dir):
 class TestPretrainedModelPerformance:
     @pytest.mark.with_downloads()
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.skipif(
         not data_exists('/home/TestData/nlp/token_classification_punctuation/fisher'), reason='Not a Jenkins machine'
     )
@@ -79,7 +79,7 @@ class TestPretrainedModelPerformance:
 
     @pytest.mark.with_downloads()
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.skipif(
         not data_exists('/home/TestData/nlp/token_classification_punctuation/fisher'), reason='Not a Jenkins machine'
     )
@@ -95,7 +95,7 @@ class TestPretrainedModelPerformance:
 
     @pytest.mark.with_downloads()
     @pytest.mark.unit
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.skipif(
         not data_exists('/home/TestData/nlp/token_classification_punctuation/gmb'), reason='Not a Jenkins machine'
     )

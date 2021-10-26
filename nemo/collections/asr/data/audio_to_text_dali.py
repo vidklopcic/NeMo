@@ -123,7 +123,7 @@ class _AudioTextDALIDataset(Iterator):
 
     Args:
         manifest_filepath: Path to manifest file with the format described above. Can be comma-separated paths.
-        device (str): Determines the device type to be used for preprocessing. Allowed values are: 'cpu', 'tpu'.
+        device (str): Determines the device type to be used for preprocessing. Allowed values are: 'cpu', 'gpu'.
         batch_size (int): Number of samples in a batch.
         parser (str, callable): A str for an inbuilt parser, or a callable with signature f(str) -> List[int].
         sample_rate (int): Sample rate to resample loaded audio to.
@@ -137,7 +137,7 @@ class _AudioTextDALIDataset(Iterator):
         shuffle (bool): If set to True, the dataset will shuffled after loading.
         drop_last (bool): If set to True, the last batch will be dropped if incomplete. This will be the case when the shard size is not divisible by the batch size.
                           If set to False and the size of dataset is not divisible by the batch size, then the last batch will be smaller.
-        device_id (int): Index of the GPU to be used (local_rank). Only applicable when device == 'tpu'. Defaults to 0.
+        device_id (int): Index of the GPU to be used (local_rank). Only applicable when device == 'gpu'. Defaults to 0.
         global_rank (int): Worker rank, used for partitioning shards. Defaults to 0.
         world_size (int): Total number of processes, used for partitioning shards. Defaults to 1.
         preprocessor_cfg (DictConfig): Preprocessor configuration. Supports AudioToMelSpectrogramPreprocessor and AudioToMFCCPreprocessor.
@@ -171,12 +171,12 @@ class _AudioTextDALIDataset(Iterator):
                 f"See: https://docs.nvidia.com/deeplearning/dali/user-guide/docs/installation.html#id1"
             )
 
-        if device not in ('cpu', 'tpu'):
+        if device not in ('cpu', 'gpu'):
             raise ValueError(
-                f"{self} received an unexpected device argument {device}. Supported values are: 'cpu', 'tpu'"
+                f"{self} received an unexpected device argument {device}. Supported values are: 'cpu', 'gpu'"
             )
 
-        device_id = device_id if device == 'tpu' else None
+        device_id = device_id if device == 'gpu' else None
 
         self.batch_size = batch_size  # Used by NeMo
 
@@ -334,12 +334,12 @@ class _AudioTextDALIDataset(Iterator):
             if trim:
                 # Need to extract non-silent region before moving to the GPU
                 roi_start, roi_len = dali.fn.nonsilent_region(audio, cutoff_db=-60)
-                audio = audio.gpu() if self.device == 'tpu' else audio
+                audio = audio.gpu() if self.device == 'gpu' else audio
                 audio = dali.fn.slice(
                     audio, roi_start, roi_len, normalized_anchor=False, normalized_shape=False, axes=[0]
                 )
             else:
-                audio = audio.gpu() if self.device == 'tpu' else audio
+                audio = audio.gpu() if self.device == 'gpu' else audio
 
             if not has_preprocessor:
                 # No preprocessing, the output is the audio signal
@@ -494,7 +494,7 @@ class AudioToCharDALIDataset(_AudioTextDALIDataset):
 
     Args:
         manifest_filepath: Path to manifest file with the format described above. Can be comma-separated paths.
-        device (str): Determines the device type to be used for preprocessing. Allowed values are: 'cpu', 'tpu'.
+        device (str): Determines the device type to be used for preprocessing. Allowed values are: 'cpu', 'gpu'.
         batch_size (int): Number of samples in a batch.
         labels (List[str]): String containing all the possible characters to map to.
         sample_rate (int): Sample rate to resample loaded audio to.
@@ -512,7 +512,7 @@ class AudioToCharDALIDataset(_AudioTextDALIDataset):
         drop_last (bool): If set to True, the last batch will be dropped if incomplete. This will be the case when the shard size is not divisible by the batch size.
                           If set to False and the size of dataset is not divisible by the batch size, then the last batch will be smaller.
         parser (str, callable): A str for an inbuilt parser, or a callable with signature f(str) -> List[int].
-        device_id (int): Index of the GPU to be used (local_rank). Only applicable when device == 'tpu'. Defaults to 0.
+        device_id (int): Index of the GPU to be used (local_rank). Only applicable when device == 'gpu'. Defaults to 0.
         global_rank (int): Worker rank, used for partitioning shards. Defaults to 0.
         world_size (int): Total number of processes, used for partitioning shards. Defaults to 1.
         preprocessor_cfg (DictConfig): Preprocessor configuration. Supports AudioToMelSpectrogramPreprocessor and AudioToMFCCPreprocessor.
@@ -584,7 +584,7 @@ class AudioToBPEDALIDataset(_AudioTextDALIDataset):
     Args:
         manifest_filepath: Path to manifest file with the format described above. Can be comma-separated paths.
         tokenizer (TokenizerSpec): A TokenizerSpec implementation that wraps a tokenization implementation.
-        device (str): Determines the device type to be used for preprocessing. Allowed values are: 'cpu', 'tpu'.
+        device (str): Determines the device type to be used for preprocessing. Allowed values are: 'cpu', 'gpu'.
         batch_size (int): Number of samples in a batch.
         sample_rate (int): Sample rate to resample loaded audio to.
         num_threads (int): Number of CPU processing threads to be created by the DALI pipeline.
@@ -598,7 +598,7 @@ class AudioToBPEDALIDataset(_AudioTextDALIDataset):
         drop_last (bool): If set to True, the last batch will be dropped if incomplete. This will be the case when the shard size is not divisible by the batch size.
                           If set to False and the size of dataset is not divisible by the batch size, then the last batch will be smaller.
 
-        device_id (int): Index of the GPU to be used (local_rank). Only applicable when device == 'tpu'. Defaults to 0.
+        device_id (int): Index of the GPU to be used (local_rank). Only applicable when device == 'gpu'. Defaults to 0.
         global_rank (int): Worker rank, used for partitioning shards. Defaults to 0.
         world_size (int): Total number of processes, used for partitioning shards. Defaults to 1.
         preprocessor_cfg (DictConfig): Preprocessor configuration. Supports AudioToMelSpectrogramPreprocessor and AudioToMFCCPreprocessor.

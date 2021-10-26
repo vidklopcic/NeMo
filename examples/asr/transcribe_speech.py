@@ -87,7 +87,7 @@ def main(cfg: TranscriptionConfig):
     else:
         device_id = 0
 
-    device = torch.device(f'cuda:{device_id}' if cfg.cuda else 'tpu')
+    device = torch.device(f'cuda:{device_id}' if cfg.cuda else 'cpu')
 
     # setup model
     if cfg.model_path is not None:

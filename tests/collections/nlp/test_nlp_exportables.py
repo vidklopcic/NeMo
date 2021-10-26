@@ -39,19 +39,19 @@ def classifier_export(obj):
 
 
 class TestExportableClassifiers:
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_token_classifier_export_to_onnx(self):
         for num_layers in [1, 2, 4]:
             classifier_export(TokenClassifier(hidden_size=256, num_layers=num_layers, num_classes=16))
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_bert_pretraining_export_to_onnx(self):
         for num_layers in [1, 2, 4]:
             classifier_export(TokenClassifier(hidden_size=256, num_layers=num_layers, num_classes=16))
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_sequence_token_classifier_export_to_onnx(self):
         for num_layers in [1, 2, 4]:
@@ -59,19 +59,19 @@ class TestExportableClassifiers:
                 SequenceTokenClassifier(hidden_size=256, num_slots=8, num_intents=8, num_layers=num_layers)
             )
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_sequence_classifier_export_to_onnx(self):
         for num_layers in [1, 2, 4]:
             classifier_export(SequenceClassifier(hidden_size=256, num_classes=16, num_layers=num_layers))
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_sequence_regression_export_to_onnx(self):
         for num_layers in [1, 2, 4]:
             classifier_export(SequenceRegression(hidden_size=256, num_layers=num_layers))
 
-    # @pytest.mark.run_only_on('tpu')
+    # @pytest.mark.run_only_on('GPU')
     # @pytest.mark.unit
     # def test_IntentSlotClassificationModel_export_to_onnx(self, dummy_data):
     #     with tempfile.TemporaryDirectory() as tmpdir:
@@ -99,7 +99,7 @@ class TestExportableClassifiers:
     #         assert onnx_model.graph.output[0].name == 'intent_logits'
     #         assert onnx_model.graph.output[1].name == 'slot_logits'
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     @pytest.mark.skip('Are we exporting to torchscript?')
     def test_IntentSlotClassificationModel_export_to_torchscript(self, dummy_data):
@@ -131,7 +131,7 @@ class TestExportableClassifiers:
             assert modules[217].original_name == 'SequenceTokenClassifier'
             assert modules[219].original_name == 'MultiLayerPerceptron'
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_TokenClassificationModel_export_to_onnx(self):
         model = nemo_nlp.models.TokenClassificationModel.from_pretrained(model_name="ner_en_bert")
@@ -143,7 +143,7 @@ class TestExportableClassifiers:
             assert onnx_model.graph.input[0].name == 'input_ids'
             assert onnx_model.graph.output[0].name == 'logits'
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_PunctuationCapitalizationModel_export_to_onnx(self):
         model = nemo_nlp.models.PunctuationCapitalizationModel.from_pretrained(model_name="punctuation_en_distilbert")
@@ -157,7 +157,7 @@ class TestExportableClassifiers:
             assert onnx_model.graph.output[0].name == 'punct_logits'
             assert onnx_model.graph.output[1].name == 'capit_logits'
 
-    @pytest.mark.run_only_on('tpu')
+    @pytest.mark.run_only_on('GPU')
     @pytest.mark.unit
     def test_QAModel_export_to_onnx(self):
         model = nemo_nlp.models.QAModel.from_pretrained(model_name="qa_squadv2.0_bertbase")

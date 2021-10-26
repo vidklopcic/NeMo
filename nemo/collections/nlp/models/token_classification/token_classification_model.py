@@ -349,7 +349,7 @@ class TokenClassificationModel(NLPModel):
         all_preds = []
         mode = self.training
         try:
-            device = 'cuda' if torch.cuda.is_available() else 'tpu'
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
             # Switch model to evaluation mode
             self.eval()
             self.to(device)

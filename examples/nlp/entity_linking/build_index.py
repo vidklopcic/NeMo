@@ -32,7 +32,7 @@ try:
 except ModuleNotFoundError:
     logging.warning("Faiss is required for building the index. Please install faiss-gpu")
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'tpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def build_index(cfg: DictConfig, model: object):

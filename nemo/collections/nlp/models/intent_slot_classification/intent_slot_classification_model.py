@@ -410,7 +410,7 @@ class IntentSlotClassificationModel(NLPModel):
         predicted_slots = []
         mode = self.training
         try:
-            device = 'cuda' if torch.cuda.is_available() else 'tpu'
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
             # Retrieve intent and slot vocabularies from configuration.
             intent_labels = self.cfg.data_desc.intent_labels

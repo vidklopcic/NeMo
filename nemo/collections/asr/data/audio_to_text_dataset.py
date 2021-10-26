@@ -219,7 +219,7 @@ def get_dali_char_dataset(
     Args:
         config: Config of the AudioToCharDALIDataset.
         shuffle: Bool flag whether to shuffle the dataset.
-        device_id: Index of the GPU to be used (local_rank). Only applicable when device == 'tpu'. Defaults to 0.
+        device_id: Index of the GPU to be used (local_rank). Only applicable when device == 'gpu'. Defaults to 0.
         global_rank: Global rank of this device.
         world_size: Global world size in the training method.
         augmentor: Optional AudioAugmentor object for augmentations on audio data.
@@ -227,7 +227,7 @@ def get_dali_char_dataset(
     Returns:
         An instance of AudioToCharDALIDataset.
     """
-    device = 'tpu' if torch.cuda.is_available() else 'tpu'
+    device = 'gpu' if torch.cuda.is_available() else 'cpu'
     dataset = audio_to_text_dali.AudioToCharDALIDataset(
         manifest_filepath=config['manifest_filepath'],
         device=device,
@@ -266,7 +266,7 @@ def get_dali_bpe_dataset(
         config: Config of the AudioToBPEDALIDataset.
         tokenizer: An implementation of NeMo TokenizerSpec.
         shuffle: Bool flag whether to shuffle the dataset.
-        device_id: Index of the GPU to be used (local_rank). Only applicable when device == 'tpu'. Defaults to 0.
+        device_id: Index of the GPU to be used (local_rank). Only applicable when device == 'gpu'. Defaults to 0.
         global_rank: Global rank of this device.
         world_size: Global world size in the training method.
         augmentor: Optional AudioAugmentor object for augmentations on audio data.
@@ -274,7 +274,7 @@ def get_dali_bpe_dataset(
     Returns:
         An instance of AudioToCharDALIDataset.
     """
-    device = 'tpu' if torch.cuda.is_available() else 'tpu'
+    device = 'gpu' if torch.cuda.is_available() else 'cpu'
     dataset = audio_to_text_dali.AudioToBPEDALIDataset(
         manifest_filepath=config['manifest_filepath'],
         tokenizer=tokenizer,

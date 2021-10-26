@@ -453,9 +453,9 @@ class Wav2VecEncoderModel(ModelPT):
             augmentor = None
 
         shuffle = config['shuffle']
-        device = 'tpu' if torch.cuda.is_available() else 'tpu'
+        device = 'gpu' if torch.cuda.is_available() else 'cpu'
         if config.get('use_dali', False):
-            device_id = self.local_rank if device == 'tpu' else None
+            device_id = self.local_rank if device == 'gpu' else None
             dataset = audio_to_text_dataset.get_dali_char_dataset(
                 config=config,
                 shuffle=shuffle,
