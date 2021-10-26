@@ -490,7 +490,7 @@ class AudioToCharWithDursF0Dataset(AudioToCharDataset):
     @staticmethod
     def make_mask(lengths, max_length=None):
         """Makes mask from list of lengths."""
-        device = lengths.device if torch.is_tensor(lengths) else 'cpu'
+        device = lengths.device if torch.is_tensor(lengths) else 'tpu'
         lengths = lengths if torch.is_tensor(lengths) else torch.tensor(lengths)
         max_length = max_length or torch.max(lengths)
         start = torch.tensor(0).int()

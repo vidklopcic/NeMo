@@ -166,7 +166,7 @@ class TestASRDatasets:
 
         num_samples = 10
         batch_size = 2
-        device = 'gpu' if torch.cuda.is_available() else 'cpu'
+        device = 'tpu' if torch.cuda.is_available() else 'tpu'
         texts = []
 
         with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8') as f:
@@ -251,7 +251,7 @@ class TestASRDatasets:
 
         num_samples = 10
         batch_size = 2
-        device = 'gpu' if torch.cuda.is_available() else 'cpu'
+        device = 'tpu' if torch.cuda.is_available() else 'tpu'
         texts = []
 
         tokenizer_path = os.path.join(test_data_dir, "asr", "tokenizers", "an4_wpe_128", 'vocab.txt')

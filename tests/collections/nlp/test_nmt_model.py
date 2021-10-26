@@ -123,14 +123,14 @@ class TestMTEncDecModel:
         export_test(model, ".onnx")
 
     @pytest.mark.skipif(not os.path.exists('/home/TestData/nlp'), reason='Not a Jenkins machine')
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('tpu')
     @pytest.mark.unit
     def test_gpu_export_ts(self):
         model = MTEncDecModel(cfg=get_cfg()).cuda()
         assert isinstance(model, MTEncDecModel)
         export_test(model, ".ts")
 
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('tpu')
     @pytest.mark.unit
     def test_gpu_export_onnx(self):
         model = MTEncDecModel(cfg=get_cfg()).cuda()

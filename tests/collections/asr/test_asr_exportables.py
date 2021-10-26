@@ -33,7 +33,7 @@ NUMBA_RNNT_LOSS_AVAILABLE = numba_utils.numba_cuda_is_supported(__NUMBA_MINIMUM_
 
 
 class TestExportable:
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('tpu')
     @pytest.mark.unit
     def test_EncDecCTCModel_export_to_onnx(self):
         model_config = DictConfig(
@@ -52,7 +52,7 @@ class TestExportable:
             assert onnx_model.graph.input[0].name == 'audio_signal'
             assert onnx_model.graph.output[0].name == 'logprobs'
 
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('tpu')
     @pytest.mark.unit
     def test_EncDecClassificationModel_export_to_onnx(self, speech_classification_model):
         model = speech_classification_model.train()
@@ -64,7 +64,7 @@ class TestExportable:
             assert onnx_model.graph.input[0].name == 'audio_signal'
             assert onnx_model.graph.output[0].name == 'logits'
 
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('tpu')
     @pytest.mark.unit
     def test_EncDecSpeakerLabelModel_export_to_onnx(self, speaker_label_model):
         model = speaker_label_model.train()
@@ -76,7 +76,7 @@ class TestExportable:
             assert onnx_model.graph.input[0].name == 'audio_signal'
             assert onnx_model.graph.output[0].name == 'logits'
 
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('tpu')
     @pytest.mark.unit
     def test_EncDecCitrinetModel_export_to_onnx(self, citrinet_model):
         model = citrinet_model.train()
@@ -91,7 +91,7 @@ class TestExportable:
     @pytest.mark.skipif(
         not NUMBA_RNNT_LOSS_AVAILABLE, reason='RNNTLoss has not been compiled with appropriate numba version.',
     )
-    @pytest.mark.run_only_on('GPU')
+    @pytest.mark.run_only_on('tpu')
     @pytest.mark.unit
     def test_EncDecRNNTModel_export_to_onnx(self, citrinet_rnnt_model):
         citrinet_rnnt_model.freeze()

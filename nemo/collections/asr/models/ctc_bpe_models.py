@@ -195,9 +195,9 @@ class EncDecCTCModelBPE(EncDecCTCModel, ASRBPEMixin):
             augmentor = None
 
         shuffle = config['shuffle']
-        device = 'gpu' if torch.cuda.is_available() else 'cpu'
+        device = 'tpu' if torch.cuda.is_available() else 'tpu'
         if config.get('use_dali', False):
-            device_id = self.local_rank if device == 'gpu' else None
+            device_id = self.local_rank if device == 'tpu' else None
             dataset = audio_to_text_dataset.get_dali_bpe_dataset(
                 config=config,
                 tokenizer=self.tokenizer,
