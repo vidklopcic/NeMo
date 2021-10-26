@@ -393,8 +393,8 @@ class FilterbankFeatures(nn.Module):
         print('---- featurizer -> forward 4 ----')
 
         # disable autocast to get full range of stft values
-        with torch.cuda.amp.autocast(enabled=False):
-            x = self.stft(x)
+        # with torch.cuda.amp.autocast(enabled=False):
+        x = self.stft(x)
         print('---- featurizer -> forward 5 ----')
 
         # torch returns real, imag; so convert to magnitude
