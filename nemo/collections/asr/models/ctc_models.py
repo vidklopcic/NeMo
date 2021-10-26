@@ -570,6 +570,7 @@ class EncDecCTCModel(ASRModel, ExportableEncDecModel, ASRModuleMixin):
     def training_step(self, batch, batch_nb):
         print('---- training_step 1 ----')
         signal, signal_len, transcript, transcript_len = batch
+        print(f'---- training_step batch: {transcript, transcript_len} ----')
         if isinstance(batch, DALIOutputs) and batch.has_processed_signal:
             log_probs, encoded_len, predictions = self.forward(
                 processed_signal=signal, processed_signal_length=signal_len
