@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+import os
 from os.path import expanduser
 from typing import Any, Callable, Dict, Iterator, List, Optional, Union
 
@@ -32,7 +33,7 @@ class ManifestEN:
 
 
 def item_iter(
-    manifests_files: Union[str, List[str]], parse_func: Callable[[str, Optional[str]], Dict[str, Any]] = None
+        manifests_files: Union[str, List[str]], parse_func: Callable[[str, Optional[str]], Dict[str, Any]] = None
 ) -> Iterator[Dict[str, Any]]:
     """Iterate through json lines of provided manifests.
 
@@ -88,6 +89,8 @@ def __parse_item(line: str, manifest_file: str) -> Dict[str, Any]:
             f"Manifest file {manifest_file} has invalid json line structure: {line} without proper audio file key."
         )
     item['audio_file'] = expanduser(item['audio_file'])
+    if not os.path.isabs(item['audio_file']):
+        item['audio_file'] = os.path.join(os.path.dirname(manifest_file), item['audio_file'])
 
     # Duration.
     if 'duration' not in item:
