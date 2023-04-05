@@ -825,7 +825,7 @@ class SpectralClustering:
         labels = stacked_labels[label_index]
         return labels
 
-    def getSpectralEmbeddings(self, affinity_mat: torch.Tensor, n_spks: int = 8, cuda: bool = False) -> torch.Tensor:
+    def getSpectralEmbeddings(self, affinity_mat: torch.Tensor, n_spks: int = 8, cuda: bool = False, method='lobpcg') -> torch.Tensor:
         """
         Calculate eigenvalues and eigenvectors to extract spectral embeddings.
 
@@ -841,12 +841,27 @@ class SpectralClustering:
             labels (Tensor):
                 clustering label output
         """
-        laplacian = getLaplacian(affinity_mat)
-        _, diffusion_map_ = eigDecompose(laplacian, cuda=cuda, device=affinity_mat.device)
-        diffusion_map = diffusion_map_[:, :n_spks]
-        inv_idx = torch.arange(diffusion_map.size(1) - 1, -1, -1).long()
-        embedding = diffusion_map.T[inv_idx, :]
-        return embedding[:n_spks].T
+        print('get spectral embeddings using', method, 'method')
+        if method == 'eig':
+            laplacian = getLaplacian(affinity_mat)
+            _, diffusion_map_ = eigDecompose(laplacian, cuda=cuda, device=affinity_mat.device)
+            diffusion_map = diffusion_map_[:, :n_spks]
+            inv_idx = torch.arange(diffusion_map.size(1) - 1, -1, -1).long()
+            embedding = diffusion_map.T[inv_idx, :]
+            return embedding[:n_spks].T
+        elif method == 'svd':
+            from sklearn.decomposition import TruncatedSVD
+            return torch.tensor(TruncatedSVD(n_components=n_spks).fit_transform(affinity_mat.cpu().numpy()))
+        elif method == 'lobpcg':
+            laplacian = getLaplacian(affinity_mat).to_sparse_csr()
+            if cuda:
+                device = self.device or torch.cuda.current_device()
+                laplacian = laplacian.float().to(device)
+            else:
+                laplacian = laplacian.float()
+            return torch.lobpcg(laplacian, largest=False, k=n_spks)[1]
+        else:
+            raise ValueError('method should be one of eig, svd, lobpcg')
 
 
 class NMESC:

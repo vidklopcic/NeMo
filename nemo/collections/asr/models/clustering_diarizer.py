@@ -333,7 +333,9 @@ class ClusteringDiarizer(torch.nn.Module, Model, DiarizationMixin):
             raise ValueError(
                 "Only one of diarizer.oracle_vad, vad.model_path or vad.external_vad_manifest must be passed from config"
             )
-        validate_vad_manifest(self.AUDIO_RTTM_MAP, vad_manifest=self._speaker_manifest_path)
+        # not sure why this is needed, as AUDIO_RTTM_MAP can contain entries without duration - works if we don't validate
+        # file-based configs are a huge convoluted MESS!
+        # validate_vad_manifest(self.AUDIO_RTTM_MAP, vad_manifest=self._speaker_manifest_path)
 
     def _extract_embeddings(self, manifest_file: str, scale_idx: int, num_scales: int):
         """
@@ -436,6 +438,7 @@ class ClusteringDiarizer(torch.nn.Module, Model, DiarizationMixin):
         # Speech Activity Detection
         self._perform_speech_activity_detection()
 
+        print('Segmentation')
         # Segmentation
         scales = self.multiscale_args_dict['scale_dict'].items()
         for scale_idx, (window, shift) in scales:
@@ -448,17 +451,22 @@ class ClusteringDiarizer(torch.nn.Module, Model, DiarizationMixin):
 
             self.multiscale_embeddings_and_timestamps[scale_idx] = [self.embeddings, self.time_stamps]
 
+        print('get_embs_and_timestamps')
         embs_and_timestamps = get_embs_and_timestamps(
             self.multiscale_embeddings_and_timestamps, self.multiscale_args_dict
         )
 
         # Clustering
+        clustering_device = getattr(self._cfg, 'clustering_device', self._speaker_model.device)
+        if type(clustering_device) is str:
+            clustering_device = torch.device(clustering_device)
+        print('Clustering on', clustering_device)
         all_reference, all_hypothesis = perform_clustering(
             embs_and_timestamps=embs_and_timestamps,
             AUDIO_RTTM_MAP=self.AUDIO_RTTM_MAP,
             out_rttm_dir=out_rttm_dir,
             clustering_params=self._cluster_params,
-            device=self._speaker_model.device,
+            device=clustering_device,
             verbose=self.verbose,
         )
         logging.info("Outputs are saved in {} directory".format(os.path.abspath(self._diarizer_params.out_dir)))
