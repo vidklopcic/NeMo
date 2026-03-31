@@ -397,7 +397,8 @@ class StreamingFeatureBufferer:
         '''
 
         self.NORM_CONSTANT = 1e-5
-        if hasattr(asr_model.preprocessor, 'log') and asr_model.preprocessor.log:
+        if getattr(asr_model.preprocessor, 'log', False) \
+                or getattr(getattr(asr_model.preprocessor, 'featurizer', None), 'log', False):
             self.ZERO_LEVEL_SPEC_DB_VAL = -16.635  # Log-Melspectrogram value for zero signal
         else:
             self.ZERO_LEVEL_SPEC_DB_VAL = 0.0
@@ -520,6 +521,11 @@ class AudioFeatureIterator(IterableDataset):
             length=audio_signal_len,
         )
         self._features = self._features.squeeze()
+        if getattr(preprocessor, 'log', False) \
+                or getattr(getattr(preprocessor, 'featurizer', None), 'log', False):
+            self.ZERO_LEVEL_SPEC_DB_VAL = -16.635
+        else:
+            self.ZERO_LEVEL_SPEC_DB_VAL = 0.0
 
     def __iter__(self):
         return self
@@ -535,7 +541,7 @@ class AudioFeatureIterator(IterableDataset):
             if not self.pad_to_frame_len:
                 frame = self._features[:, self._start : self._features_len[0]].cpu()
             else:
-                frame = np.zeros([self._features.shape[0], int(self._feature_frame_len)], dtype='float32')
+                frame = np.ones([self._features.shape[0], int(self._feature_frame_len)], dtype='float32') * self.ZERO_LEVEL_SPEC_DB_VAL
                 segment = self._features[:, self._start : self._features_len[0]].cpu()
                 frame[:, : segment.shape[1]] = segment
             self.output = False
@@ -621,7 +627,8 @@ class FeatureFrameBufferer:
           frame_overlap: duration of overlaps before and after current frame, seconds
           offset: number of symbols to drop for smooth streaming
         '''
-        if hasattr(asr_model.preprocessor, 'log') and asr_model.preprocessor.log:
+        if getattr(asr_model.preprocessor, 'log', False) \
+                or getattr(getattr(asr_model.preprocessor, 'featurizer', None), 'log', False):
             self.ZERO_LEVEL_SPEC_DB_VAL = -16.635  # Log-Melspectrogram value for zero signal
         else:
             self.ZERO_LEVEL_SPEC_DB_VAL = 0.0

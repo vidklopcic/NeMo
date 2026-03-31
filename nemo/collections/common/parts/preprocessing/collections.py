@@ -673,13 +673,16 @@ class SpeechLLMAudioTextCollection(SpeechLLMAudioText):
         return item
 
 
+SpeechLabelEntity = collections.namedtuple(
+    typename='SpeechLabelEntity',
+    field_names='audio_file duration label offset',
+)
+
+
 class SpeechLabel(_Collection):
     """List of audio-label correspondence with preprocessing."""
 
-    OUTPUT_TYPE = collections.namedtuple(
-        typename='SpeechLabelEntity',
-        field_names='audio_file duration label offset',
-    )
+    OUTPUT_TYPE = SpeechLabelEntity
 
     def __init__(
         self,

@@ -835,28 +835,48 @@ class SpectralClustering:
         labels = stacked_labels[label_index]
         return labels
 
-    def getSpectralEmbeddings(self, affinity_mat: torch.Tensor, n_spks: int = 8, cuda: bool = False) -> torch.Tensor:
+    def getSpectralEmbeddings(
+        self, affinity_mat: torch.Tensor, n_spks: int = 8, cuda: bool = False, method: str = 'lobpcg'
+    ) -> torch.Tensor:
         """
         Calculate eigenvalues and eigenvectors to extract spectral embeddings.
 
         Args:
-            affinity (Tensor):
+            affinity_mat (Tensor):
                 Affinity matrix input
-            cuda (torch.bool):
+            n_spks (int):
+                Number of speakers (clusters)
+            cuda (bool):
                 Use cuda for spectral clustering if cuda=True
-            device (torch.device):
-                Torch device variable
+            method (str):
+                Method for spectral embedding computation: 'eig' (eigen-decomposition),
+                'svd' (TruncatedSVD), or 'lobpcg' (torch.lobpcg on sparse Laplacian, default).
 
         Returns:
-            labels (Tensor):
-                clustering label output
+            embedding (Tensor):
+                Spectral embedding output
         """
-        laplacian = getLaplacian(affinity_mat)
-        _, diffusion_map_ = eigDecompose(laplacian, cuda=cuda, device=affinity_mat.device)
-        diffusion_map = diffusion_map_[:, :n_spks]
-        inv_idx = torch.arange(diffusion_map.size(1) - 1, -1, -1).long()
-        embedding = diffusion_map.T[inv_idx, :]
-        return embedding[:n_spks].T
+        if method == 'eig':
+            laplacian = getLaplacian(affinity_mat)
+            _, diffusion_map_ = eigDecompose(laplacian, cuda=cuda, device=affinity_mat.device)
+            diffusion_map = diffusion_map_[:, :n_spks]
+            inv_idx = torch.arange(diffusion_map.size(1) - 1, -1, -1).long()
+            embedding = diffusion_map.T[inv_idx, :]
+            return embedding[:n_spks].T
+        elif method == 'svd':
+            from sklearn.decomposition import TruncatedSVD
+
+            return torch.tensor(TruncatedSVD(n_components=n_spks).fit_transform(affinity_mat.cpu().numpy()))
+        elif method == 'lobpcg':
+            laplacian = getLaplacian(affinity_mat).to_sparse_csr()
+            if cuda:
+                device = self.device if hasattr(self, 'device') and self.device else torch.cuda.current_device()
+                laplacian = laplacian.float().to(device)
+            else:
+                laplacian = laplacian.float()
+            return torch.lobpcg(laplacian, largest=False, k=n_spks)[1]
+        else:
+            raise ValueError(f"Unknown spectral embedding method: {method}")
 
 
 class NMESC:
